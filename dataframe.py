@@ -35,11 +35,7 @@ def patent_DataFrame():
     )
 
     filtered = matched.filter(
-        p_cited["POSTATE"].isNotNull()\
-        & p_citing["POSTATE"] != ""\
-        & p_citing["POSTATE"].isNotNull()\
-        & p_citing["POSTATE"] != ""\
-        & p_cited["POSTATE"] == p_citing["POSTATE"]
+        p_cited["POSTATE"].isNotNull() & p_citing["POSTATE"].isNotNull() & p_cited["POSTATE"] == p_citing["POSTATE"]
     )
 
     same_State_counts = filtered\
