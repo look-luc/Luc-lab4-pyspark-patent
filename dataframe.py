@@ -35,8 +35,8 @@ def patent_DataFrame():
     )
 
     filtered = matched.filter(
-        p_cited["POSTATE"].isNotNull()
-        and p_citing["POSTATE"] != ""
+        p_cited["POSTATE"].isNotNull()\
+        and p_citing["POSTATE"] != ""\
         and p_citing["POSTATE"].isNotNull()\
         and p_citing["POSTATE"] != ""\
         and p_cited["POSTATE"] == p_citing["POSTATE"]
