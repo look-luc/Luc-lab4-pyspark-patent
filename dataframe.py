@@ -49,7 +49,7 @@ def patent_DataFrame():
     ).select(
         patents["*"],
         coalesce(
-            same_State_counts["CO_STATE_COUNT"],
+            same_State_counts["same_State_count"],
             lit(0)
         ).alias("CO_STATE"),
     ).orderBy(col("CO_STATE").desc())
