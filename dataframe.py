@@ -29,9 +29,9 @@ def patent_DataFrame():
         """
         WITH SAME_CITING_COUNT AS(
             SELECT
-                CITED,
+                CITED_STATE,
                 P_CITED.POSTATE AS CITED_POSTATE,
-                CITING,
+                CITING_STATE,
                 P_CITING.POSTATE AS CITING_POSTATE,
                 COUNT (P_CITED.PATENT) AS CO_STATE_COUNT
             FROM citations
