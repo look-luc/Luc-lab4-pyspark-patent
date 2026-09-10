@@ -44,7 +44,7 @@ def patent_DataFrame():
         .agg(count(p_cited["PATENT"]).alias("same_State_count"))
     result = patents.join(
         same_State_counts,
-        patents["CITING"] == same_State_counts["CITING"],
+        citations["CITING"] == same_State_counts["CITING"],
         how="left"
     ).select(
         patents["*"],
