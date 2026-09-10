@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import count, coalesce, lit
 
 
 def patent_DataFrame():
@@ -13,7 +14,6 @@ def patent_DataFrame():
         compression="gzip",
         inferSchema="true",
     )
-    citations.createOrReplaceTempView("citations")
 
     patents = spark.read.load(
         "apat63_99.txt.gz",
@@ -23,32 +23,33 @@ def patent_DataFrame():
         compression="gzip",
         inferSchema="true",
     )
-    patents.createOrReplaceTempView("patents")
+    p_cited = patents.alias("P_CITED")
+    p_citing = patents.alias("P_CITING")
 
-    summary_df = spark.sql(
-        """
-        WITH SAME_CITING_COUNT AS(
-            SELECT
-                CITED,
-                P_CITED.POSTATE AS CITED_POSTATE,
-                CITING,
-                P_CITING.POSTATE AS CITING_POSTATE,
-                COUNT (P_CITED.PATENT) AS CO_STATE_COUNT
-            FROM citations
-            INNER JOIN PATENTS P_CITED ON CITED = P_CITED.PATENT
-            INNER JOIN PATENTS P_CITING ON CITING = P_CITING.PATENT
-            WHERE P_CITING.POSTATE IS NOT NULL
-                  AND P_CITING.POSTATE != ''
-                  AND P_CITED.POSTATE IS NOT NULL
-                  AND P_CITED.POSTATE != ''
-                  AND P_CITED.POSTATE = P_CITING.POSTATE
-            GROUP BY P_CITING.PATENT
-        )
-        SELECT
-            P.*,
-            COALESCE(S.CO_STATE_COUNT, 0) AS CO_STATE
-        FROM PATENTS P
-        LEFT JOIN SAME_CITING_COUNT S ON P.PATENT = S.CITING
-        ORDER BY CO_STATE DESC
-        """
+    matched = citations.join(
+        p_cited,
+        citations["CITED"] == p_cited["PATENT"],
+    ).join(
+        p_citing,
+        citations["CITING"] == p_citing["PATENT"],
+    )
+
+    filtered = matched.filter(
+        p_cited["POSTATE"].isNotNull()
+        and p_citing["POSTATE"] != ""
+        and p_citing["POSTATE"].isNotNull()\
+        and p_citing["POSTATE"] != ""\
+        and p_cited["POSTATE"] == p_citing["POSTATE"]
+    )
+
+    same_State_counts = filtered\
+        .groupBy("CITING")\
+        .agg(count(p_cited["PATENT"]).alias("same_State_count"))
+    result = patents.join(
+        same_State_counts,
+        patents["CITING"] == same_State_counts["CITING"],
+        how="left"
+    ).select(
+        patents["*"],
+        coalesce(same_State_counts["CO_STATE_COUNT"], lit(0)).alias("CO_STATE"),
     )
