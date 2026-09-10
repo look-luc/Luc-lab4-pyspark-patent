@@ -1,7 +1,7 @@
 from pyspark import SparkContext, SparkConf
 
 
-def RDD():
+def patent_RDD():
     conf = SparkConf().setAppName("Lab4-rdd").setMaster("local[*]")
     sc = SparkContext(conf=conf)
 
