@@ -35,8 +35,9 @@ def patent_DataFrame():
     )
 
     filtered = matched.filter(
-        col("P_CITED.POSTATE").isNotNull() & col("P_CITING.POSTATE").isNotNull() & \
-        (col("P_CITED.POSTATE") == col("P_CITING.POSTATE"))
+        (col("P_CITED.POSTATE").isNotNull()) & (col("P_CITING.POSTATE").isNotNull()) &\
+            (col("P_CITING.POSTATE") != lit("")) & (col("P_CITED.POSTATE") != lit("")) & \
+            (col("P_CITED.POSTATE") == col("P_CITING.POSTATE"))
     )
 
     same_State_counts = filtered\
@@ -44,7 +45,7 @@ def patent_DataFrame():
         .agg(count(p_cited["PATENT"]).alias("same_State_count"))
     result = patents.join(
         same_State_counts,
-        citations["CITING"] == same_State_counts["CITING"],
+        patents["PATENT"] == same_State_counts["CITING"],
         how="left"
     ).select(
         patents["*"],
