@@ -29,14 +29,14 @@ def patent_DataFrame():
         """
         WITH SAME_CITING_COUNT AS(
             SELECT
-                CITED_STATE,
+                CITED,
                 P_CITED.POSTATE AS CITED_POSTATE,
-                CITING_STATE,
+                CITING,
                 P_CITING.POSTATE AS CITING_POSTATE,
                 COUNT (P_CITED.PATENT) AS CO_STATE_COUNT
             FROM citations
-            JOIN PATENTS P_CITED ON CITED = P_CITED.PATENT
-            JOIN PATENTS P_CITING ON CITING = P_CITING.PATENT
+            INNER JOIN PATENTS P_CITED ON CITED = P_CITED.PATENT
+            INNER JOIN PATENTS P_CITING ON CITING = P_CITING.PATENT
             WHERE P_CITING.POSTATE IS NOT NULL
                   AND P_CITING.POSTATE != ''
                   AND P_CITED.POSTATE IS NOT NULL
