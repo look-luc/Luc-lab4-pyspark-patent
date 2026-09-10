@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import count, coalesce, lit
+from pyspark.sql.functions import count, coalesce, lit, col
 
 
 def patent_DataFrame():
@@ -51,5 +51,9 @@ def patent_DataFrame():
         how="left"
     ).select(
         patents["*"],
-        coalesce(same_State_counts["CO_STATE_COUNT"], lit(0)).alias("CO_STATE"),
-    )
+        coalesce(
+            same_State_counts["CO_STATE_COUNT"],
+            lit(0)
+        ).alias("CO_STATE"),
+    ).orderBy(col("CO_STATE").desc())
+    return result
