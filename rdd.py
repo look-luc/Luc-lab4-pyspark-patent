@@ -54,9 +54,9 @@ def patent_RDD(
       .map(lambda x: f"{x[0]},{x[1]}")
 
     header_string = f'{rddPatents.first()}, "CO_STATE"'
-    combined_rdd = sc.parallelize([header_string])
+    header_rdd = sc.parallelize([header_string])
 
-    combined_rdd.union(final_rdd)
+    combined_rdd = header_rdd.union(final_rdd)
     if takes is not None:
         return combined_rdd.take(takes)
     return combined_rdd
