@@ -49,14 +49,14 @@ def patent_RDD(
     patents_by_id = patents_clean.map(lambda l: (l.split(",")[patent_idx], l))
     result = patents_by_id.leftOuterJoin(same_state_counts)
 
-    header_string = f'{rddPatents.first()}, "CO_STATE"'
-    header_rdd = sc.parallelize([header_string])
-
     final_rdd = result.map(lambda x: (x[1][0], x[1][1] if x[1][1] is not None else 0))\
       .sortBy(lambda x: x[1], ascending=False)\
       .map(lambda x: f"{x[0]},{x[1]}")
 
-    header_rdd.union(final_rdd)
+    header_string = f'{rddPatents.first()}, "CO_STATE"'
+    combined_rdd = sc.parallelize([header_string])
+
+    combined_rdd.union(final_rdd)
     if takes is not None:
-        return header_rdd.take(takes)
-    return header_rdd
+        return combined_rdd.take(takes)
+    return combined_rdd
