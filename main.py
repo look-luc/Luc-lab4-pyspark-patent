@@ -3,8 +3,8 @@ from rdd import patent_RDD
 def main():
     # df = patent_DataFrame()
     # df.show()
-    citation, patent = patent_RDD()
-    print(f"citations: {citation}\npatents: {patent}")
+    results = patent_RDD(5)
+    print(f"results: {results}")
 
 if __name__ == "__main__":
     main()
