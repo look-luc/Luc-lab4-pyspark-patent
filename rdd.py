@@ -19,5 +19,7 @@ def patent_RDD():
     rddPatents = sc.textFile("apat63_99.txt.gz")
     rdd_patents_sample = rddPatents.sample(False, 0.1).cache()
 
-    citations = parse(rdd_citations_sample).cache()
-    patents = parse(rdd_patents_sample).cache()
+    citations = parse(rdd_citations_sample).cache().take(5)
+    patents = parse(rdd_patents_sample).cache().take(5)
+
+    return citations, patents
