@@ -3,7 +3,7 @@ from rdd import patent_RDD
 def main():
     # df = patent_DataFrame()
     # df.show()
-    results = patent_RDD(5)
+    results = patent_RDD(takes=5)
     print(f"results: {results}")
 
 if __name__ == "__main__":
